@@ -1,0 +1,110 @@
+{
+ "id": "20261003-164520-890cf8",
+ "tenant": "demo",
+ "type": "lidar",
+ "name": "Тест: синтетическое облако, Астана",
+ "status": "done",
+ "created": "2026-10-03T16:45:20",
+ "log": [
+  "16:45:24 Чтение synthetic_astana.laz",
+  "16:45:24 Точек: 384,000; плотность 13.9 т/м²; ячейка растра 0.4 м; сечение 0.5 м",
+  "16:45:24 Классификация: шум, земля (SMRF), растительность, здания",
+  "16:45:30 Земля: 354,040 точек (92.2 %)",
+  "16:45:30 ЦМР (рельеф) и ЦМП (поверхность)",
+  "16:45:49 Горизонтали, отметки, контуры зданий и растительности",
+  "16:45:50 Топографический план DXF",
+  "16:45:51 Готово",
+  "16:45:51 Задача завершена"
+ ],
+ "params": {
+  "src_crs": "QAZTRF23_GK12",
+  "dst_crs": "MSK-SK42-001",
+  "height_system": "BALTIC77",
+  "scale": 500,
+  "terrain": "flat",
+  "contour_interval": null
+ },
+ "inputs": [
+  "synthetic_astana.laz"
+ ],
+ "report": [
+  {
+   "input": "synthetic_astana.laz",
+   "params": {
+    "src_crs": "QAZTRF23_GK12",
+    "dst_crs": "MSK-SK42-001",
+    "scale": 500,
+    "terrain": "flat",
+    "contour_interval": null,
+    "cell": null,
+    "reclassify": true,
+    "convention": "PV"
+   },
+   "points": 384000,
+   "density_pts_m2": 13.91,
+   "density_required_pts_m2": 50.0,
+   "density_ok": false,
+   "classes": {
+    "2": 354040,
+    "3": 81,
+    "4": 1561,
+    "5": 10912,
+    "6": 17243,
+    "7": 163
+   },
+   "cell_m": 0.4,
+   "contour_interval_m": 0.5,
+   "contours": 77,
+   "spot_heights": 268,
+   "buildings": [
+    {
+     "area_m2": 300.9,
+     "height_m": 3.5,
+     "floors_est": 1
+    },
+    {
+     "area_m2": 599.2,
+     "height_m": 14.9,
+     "floors_est": 5
+    },
+    {
+     "area_m2": 206.0,
+     "height_m": 8.4,
+     "floors_est": 3
+    },
+    {
+     "area_m2": 566.7,
+     "height_m": 9.1,
+     "floors_est": 3
+    }
+   ],
+   "vegetation_polygons": 8,
+   "bounds": [
+    136.619,
+    -4493.97,
+    302.693,
+    -4327.749
+   ],
+   "outputs": [
+    "DSM_CMP.tif",
+    "DTM_CMR.tif",
+    "classified.laz",
+    "model_3d.obj",
+    "topoplan_1-500.dxf"
+   ],
+   "norm_refs": [
+    "Инструкция № 113/НҚ от 29.03.2023: п. 32 (мин. площадь контура), п. 46 (генерализация), п. 51 (точность), п. 119–123 (слои и топология ЦММ), прил. 2 (условные знаки 1:500–1:5000)",
+    "СП РК 1.02-101-2014: цифровые инженерные модели местности"
+   ]
+  }
+ ],
+ "finished": "2026-10-03T16:45:51",
+ "files": [
+  "synthetic_astana/DSM_CMP.tif",
+  "synthetic_astana/DTM_CMR.tif",
+  "synthetic_astana/classified.laz",
+  "synthetic_astana/model_3d.obj",
+  "synthetic_astana/report.json",
+  "synthetic_astana/topoplan_1-500.dxf"
+ ]
+}

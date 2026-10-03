@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GeoKameral</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="demo-banner">Демо-версия: обработка новых данных отключена, показаны результаты тестовой задачи. Полная версия разворачивается на сервере компании.</div>
+<header class="top">
+  <div class="brand"><span class="mark">◬</span> GeoKameral <span class="sub">камеральная обработка геодезических данных</span></div>
+  <div class="tenant" id="tenant">—</div>
+</header>
+<div class="layout">
+  <nav class="side">
+    <button class="nav active" data-view="new">Новая задача</button>
+    <button class="nav" data-view="jobs">Задачи</button>
+    <button class="nav" data-view="calib">Калибровка и контроль</button>
+    <button class="nav" data-view="agent">Камеральщик</button>
+    <div class="side-foot">
+      <div class="lbl">API-ключ компании</div>
+      <input id="apikey" value="demo-key" spellcheck="false" disabled>
+    </div>
+  </nav>
+
+  <main>
+    <!-- Новая задача -->
+    <section id="view-new" class="view active">
+      <h1>Новая задача</h1>
+      <p class="lead">Загрузите сырые полевые данные. Сервис приведёт их к выбранной системе координат и выпустит продукцию по нормам РК.</p>
+      <form id="jobform" class="card grid">
+        <label>Тип данных
+          <select name="type" id="jtype">
+            <option value="lidar">Облако точек ЛиДАР (LAS/LAZ)</option>
+            <option value="photo">Снимки с БПЛА (JPG/TIFF) + GCP</option>
+          </select>
+        </label>
+        <label>Название объекта<input name="name" placeholder="напр. Астана, ул. Сыганак, уч. 12"></label>
+        <label class="src-only">Исходная система координат<select name="src_crs" id="src_crs"></select></label>
+        <label>Выходная система координат<select name="dst_crs" id="dst_crs"></select></label>
+        <label>Система высот<select name="height_system" id="height_system"></select></label>
+        <label>Масштаб плана<select name="scale" id="scale"></select></label>
+        <label>Характер рельефа
+          <select name="terrain" id="terrain">
+            <option value="flat">равнинный</option><option value="hilly">всхолмлённый</option><option value="mountain">горный</option>
+          </select>
+        </label>
+        <label>Высота сечения рельефа, м<input name="contour_interval" id="interval" type="number" step="0.25" min="0.1"></label>
+        <label class="wide drop" id="drop">
+          <input type="file" name="files" id="files" multiple>
+          <span id="droptext">Перетащите файлы сюда или нажмите для выбора</span>
+        </label>
+        <div class="wide note" id="crsnote"></div>
+        <div class="wide actions"><button type="submit" class="primary">Запустить обработку</button><span id="submitmsg"></span></div>
+      </form>
+      <div class="card products">
+        <h3>Выходная продукция</h3>
+        <ul>
+          <li><b>Топографический план DXF</b> — слои по номерам условных знаков (прил. 2 к Инструкции № 113/НҚ)</li>
+          <li><b>ЦМР</b> (рельеф, GeoTIFF), <b>ЦМП</b> (поверхность), <b>ЦММ</b> — векторные слои местности</li>
+          <li><b>Ортофотоплан</b> (GeoTIFF) с контролем размера пикселя по масштабу</li>
+          <li><b>3D-модель</b> (OBJ), классифицированное облако (LAZ, классы ASPRS)</li>
+          <li><b>Отчёт</b> о параметрах обработки и соответствии допускам</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Задачи -->
+    <section id="view-jobs" class="view">
+      <h1>Задачи</h1>
+      <div class="split">
+        <div class="card list" id="joblist"></div>
+        <div class="card detail" id="jobdetail"><p class="muted">Выберите задачу.</p></div>
+      </div>
+    </section>
+
+    <!-- Калибровка -->
+    <section id="view-calib" class="view">
+      <h1>Калибровка и контроль точности</h1>
+      <p class="lead">CSV с одноимёнными пунктами в двух системах: <code>имя;x1;y1;h1;x2;y2;h2</code>. Сервис вычислит параметры перехода, остаточные расхождения и сверит их с допусками Инструкции № 113/НҚ (п. 51–52).</p>
+      <form id="calform" class="card grid">
+        <label>Масштаб плана<select name="scale" id="cscale"></select></label>
+        <label>Характер рельефа<select name="terrain"><option value="flat">равнинный</option><option value="hilly">всхолмлённый</option><option value="mountain">горный</option></select></label>
+        <label class="wide">Файл пунктов (CSV)<input type="file" name="file" accept=".csv,.txt" required></label>
+        <div class="wide actions"><button class="primary">Рассчитать</button></div>
+      </form>
+      <div class="card" id="calresult" hidden></div>
+    </section>
+
+    <!-- Агент -->
+    <section id="view-agent" class="view">
+      <h1>Камеральщик</h1>
+      <p class="lead">Вопросы по нормам, системам координат и результатам обработки. Ответы со ссылками на пункты нормативных документов РК.</p>
+      <div class="card chat">
+        <div id="chatlog"></div>
+        <form id="chatform" class="chatbar">
+          <select id="chatjob"><option value="">без привязки к задаче</option></select>
+          <input id="chatinput" placeholder="Напр.: какой допуск по высоте для плана 1:500 при сечении 0,5 м?" autocomplete="off">
+          <button class="primary">Отправить</button>
+        </form>
+      </div>
+    </section>
+  </main>
+</div>
+<script src="demo-api.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
